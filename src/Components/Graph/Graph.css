@@ -1,0 +1,10 @@
+.graph__container{
+    height:400px;
+}
+
+
+@media (max-width: 1400px) {
+    .graph__container{
+        height:200%;
+    }
+  }

@@ -1,6 +1,3 @@
-// TODO: PULL DATA FOR CASES PER CAPITA in INFOBOX 
-
-
 import React, { useState, useEffect } from 'react';
 import './App.css';
 import {
@@ -65,7 +62,9 @@ function App() {
 
   const onCountryChange = async (e: any) => {
     const countryCode = e.target.value;
-    const countryName = e.nativeEvent.originalTarget.innerText;
+    console.log(e)
+    // const countryName = e.nativeEvent.originalTarget.innerText;
+    const countryName = e.nativeEvent.target.innerText;
 
     const url =
       (countryCode === "worldwide")

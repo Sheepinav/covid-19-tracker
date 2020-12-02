@@ -60,6 +60,7 @@ type buildChartDataProps = {
 const buildChartData = ({ data, casesType }: buildChartDataProps) => {
     let chartData = [];
     let lastDataPoint;
+    console.log(data)
     for (let date in data.cases) {
       if (lastDataPoint) {
         let newDataPoint = {

@@ -21,11 +21,11 @@ import WorldMap from './Components/WorldMap/WorldMap';
 function App() {
   const [countries, setCountries] = useState<Array<any>>([]);
   const [countryCode, setInputCountryCode] = useState<any>("worldwide");
-  const [countryName, setInputCountryName] = useState<any>("Worldwide");
+  const [countryName, setInputCountryName] = useState<string>("Worldwide");
   const [countryInfo, setCountryInfo] = useState<any>({});
-  const [casesType, setCasesType] = useState<any>("cases");
+  const [casesType, setCasesType] = useState<string>("cases");
   const [tableData, setTableData] = useState<any>([]);
-  const [tabValue, setTabValue] = useState<any>(0);
+  const [tabValue, setTabValue] = useState<number>(0);
 
   useEffect(() => {
     fetch("https://disease.sh/v3/covid-19/all")
@@ -37,18 +37,35 @@ function App() {
 
   useEffect(() => {
     const getCountriesData = async () => {
+      //Get countries where an api endpoint exists
+      let countryOptions: Array<string> = [];
+      await fetch("https://disease.sh/v3/covid-19/historical/")
+        .then((response) => response.json())
+        .then(data => {data.map((index: any) => {
+          return countryOptions.push(index.country)
+          })
+        })
+      //Get country data list from another endpoint
       await fetch("https://disease.sh/v3/covid-19/countries")
       .then((response) => response.json())
       .then((data) =>{
-        const countries = data.map((country: any) => (
+        //Filter countries so only ones with an api endpoint are queried
+        const countries = data.filter((index: any) => { 
+          if (countryOptions.includes(index.country)){
+            return index
+          }
+          return ''
+        }
+        //populate our data arrays
+        ).map((index: any) => (
           {
-            name: country.country,
-            value: country.countryInfo.iso2,
-            latitude: country.countryInfo.lat,
-            longitude: country.countryInfo.long,
-            cases: [country.casesPerOneMillion, country.cases],
-            recovered: [country.recoveredPerOneMillion, country.recovered],
-            deaths: [country.deathsPerOneMillion, country.deaths]
+            name: index.country,
+            value: index.countryInfo.iso2,
+            latitude: index.countryInfo.lat,
+            longitude: index.countryInfo.long,
+            cases: [index.casesPerOneMillion, index.cases],
+            recovered: [index.recoveredPerOneMillion, index.recovered],
+            deaths: [index.deathsPerOneMillion, index.deaths]
           }
         ))
         let sortedData = sortData(data);
@@ -62,7 +79,6 @@ function App() {
 
   const onCountryChange = async (e: any) => {
     const countryCode = e.target.value;
-    console.log(e)
     // const countryName = e.nativeEvent.originalTarget.innerText;
     const countryName = e.nativeEvent.target.innerText;
 
@@ -75,6 +91,7 @@ function App() {
       .then((data) => {
         setInputCountryCode(countryCode);
         setInputCountryName(countryName);
+        console.log(data)
         setCountryInfo(data);
       });
   };
